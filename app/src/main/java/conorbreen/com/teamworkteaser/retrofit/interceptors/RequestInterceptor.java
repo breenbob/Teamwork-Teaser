@@ -5,6 +5,7 @@ import android.util.Log;
 import java.io.IOException;
 
 import conorbreen.com.teamworkteaser.BuildConfig;
+import okhttp3.Credentials;
 import okhttp3.Interceptor;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -21,9 +22,12 @@ public class RequestInterceptor  implements Interceptor {
 
         Log.d("RequestInterceptor", "Adding default request headers to API request.");
 
+        // Authorization header is in format username:password, where username is Teamwork API token and password is an arbitrary string of text
+        String authCredential = Credentials.basic(BuildConfig.TeamworkApiToken, "xxx");
+
+        builder.addHeader("Authorization", authCredential);
         builder.addHeader("Accept", "application/json");
         builder.addHeader("Content-Type", "application/json");
-        builder.addHeader("Authorization", BuildConfig.TeamworkApiToken);
 
         return chain.proceed(builder.build());
     }

@@ -2,6 +2,7 @@ package conorbreen.com.teamworkteaser.retrofit;
 
 import conorbreen.com.teamworkteaser.enums.OrderBy;
 import conorbreen.com.teamworkteaser.models.ProjectList;
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -11,25 +12,25 @@ import retrofit2.http.Query;
  */
 
 /**
- * Main Teamwork API Retrofit interface definition. I love how this works! Big time saver, too.
+ * Main Teamwork API Retrofit interface definition. I love how Retrofit does this with annotations!
  */
 public interface ITeamworkApi {
     @GET("/projects.json")
-    Call<ProjectList> getAllProjects();
+    Observable<ProjectList> getAllProjects();
 
     @GET("/projects.json")
     // Enum parameter, to differentiate from overload with String parameter for updatedAfterDate below
-    Call<ProjectList> getAllProjects(@Query("orderby") OrderBy orderBy);
+    Observable<ProjectList> getAllProjects(@Query("orderby") OrderBy orderBy);
 
     @GET("/projects.json")
-    Call<ProjectList> getAllProjects(@Query("updatedAfterDate") String updatedAfterDate);
+    Observable<ProjectList> getAllProjects(@Query("updatedAfterDate") String updatedAfterDate);
 
     @GET("/projects.json")
-    Call<ProjectList> getAllProjects(@Query("orderby") OrderBy orderBy, @Query("updatedAfterDate") String updatedAfterDate);
+    Observable<ProjectList> getAllProjects(@Query("orderby") OrderBy orderBy, @Query("updatedAfterDate") String updatedAfterDate);
 
     @GET("/projects.json")
-    Call<ProjectList> getAllProjects(@Query("updatedAfterDate") String updatedAfterDate, @Query("updatedAfterTime") String updatedAfterTime);
+    Observable<ProjectList> getAllProjects(@Query("updatedAfterDate") String updatedAfterDate, @Query("updatedAfterTime") String updatedAfterTime);
 
     @GET("/projects.json")
-    Call<ProjectList> getAllProjects(@Query("orderby") OrderBy orderBy, @Query("updatedAfterDate") String updatedAfterDate, @Query("updatedAfterTime") String updatedAfterTime);
+    Observable<ProjectList> getAllProjects(@Query("orderby") OrderBy orderBy, @Query("updatedAfterDate") String updatedAfterDate, @Query("updatedAfterTime") String updatedAfterTime);
 }
