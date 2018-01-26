@@ -1,4 +1,19 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 apply plugin: 'realm-android'
 
 android {
@@ -36,16 +51,29 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    compile 'io.realm:android-adapters:2.1.1'
-    compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
-    compile 'io.reactivex.rxjava2:rxjava:2.1.8'
-    compile 'org.greenrobot:eventbus:3.1.1'
-    compile 'com.squareup.retrofit2:retrofit:2.3.0'
-    compile 'com.squareup.retrofit2:converter-gson:2.3.0'
-    compile 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+    // compile now deprecated in Gradle in favour of implementation
+    // https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration.html#new_configurations
+
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.android.support:support-annotations:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:cardview-v7:26.1.0'
+    implementation 'io.realm:android-adapters:2.1.1'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.8'
+    implementation 'org.greenrobot:eventbus:3.1.1'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     // for debugging purposes only
-    compile 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    compile 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.6.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.jakewharton.timber:timber:4.6.0'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.google.guava:guava:23.6-android'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
+        transitive = true;
+    }
 
 }

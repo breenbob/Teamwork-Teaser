@@ -1,10 +1,13 @@
 package conorbreen.com.teamworkteaser.retrofit;
 
-import conorbreen.com.teamworkteaser.enums.OrderBy;
+import conorbreen.com.teamworkteaser.models.enums.OrderBy;
 import conorbreen.com.teamworkteaser.models.ProjectList;
 import io.reactivex.Observable;
-import retrofit2.Call;
+import okhttp3.ResponseBody;
+import retrofit2.Response;
 import retrofit2.http.GET;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -15,6 +18,9 @@ import retrofit2.http.Query;
  * Main Teamwork API Retrofit interface definition. I love how Retrofit does this with annotations!
  */
 public interface ITeamworkApi {
+
+    //region Get Projects methods
+
     @GET("/projects.json")
     Observable<ProjectList> getAllProjects();
 
@@ -33,4 +39,16 @@ public interface ITeamworkApi {
 
     @GET("/projects.json")
     Observable<ProjectList> getAllProjects(@Query("orderby") OrderBy orderBy, @Query("updatedAfterDate") String updatedAfterDate, @Query("updatedAfterTime") String updatedAfterTime);
+
+    //endregion
+
+    //region Edit individual Project methods
+
+    @PUT("/projects/{project_id}/star.json")
+    Observable<Response<ResponseBody>> starProject(@Path("project_id") int projectId);
+
+    @PUT("/projects/{project_id}/unstar.json")
+    Observable<Response<ResponseBody>> unstarProject(@Path("project_id") int projectId);
+
+    //endregion
 }

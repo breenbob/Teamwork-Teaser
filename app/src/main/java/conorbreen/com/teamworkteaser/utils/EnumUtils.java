@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 
 public class EnumUtils {
     @Nullable
-    static public <T extends Enum<T>> String GetSerializedName(T t) {
+    static public <T extends Enum<T>> String getSerializedName(T t) {
         String value = null;
 
         try {

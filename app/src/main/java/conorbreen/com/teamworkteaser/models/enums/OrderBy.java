@@ -1,4 +1,4 @@
-package conorbreen.com.teamworkteaser.enums;
+package conorbreen.com.teamworkteaser.models.enums;
 
 import com.google.gson.annotations.SerializedName;
 

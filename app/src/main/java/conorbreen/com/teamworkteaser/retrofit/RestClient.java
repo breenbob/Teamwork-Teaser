@@ -33,12 +33,15 @@ public class RestClient {
                 .newBuilder()
                 // Add request interceptor to auto-inject Authorization/Content headers into every request
                 .addInterceptor(new RequestInterceptor())
-                // For debugging purposes
-                .addInterceptor(loggingInterceptor)
                 .connectTimeout(45, TimeUnit.SECONDS)
                 .readTimeout(0, TimeUnit.SECONDS)
                 .writeTimeout(0, TimeUnit.SECONDS)
                 .retryOnConnectionFailure(true);
+
+        if (BuildConfig.DEBUG) {
+            // For debugging purposes
+            builder.addInterceptor(loggingInterceptor);
+        }
 
         OkHttpClient client = builder.build();
 
@@ -48,11 +51,11 @@ public class RestClient {
                 .create();
 
         Retrofit retrofit = new Retrofit.Builder()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .baseUrl(BuildConfig.TeamworkApiBaseUrl)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(new EnumConverterFactory())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
 
         service = retrofit.create(ITeamworkApi.class);

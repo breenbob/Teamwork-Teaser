@@ -19,7 +19,7 @@ public class EnumConverterFactory extends Converter.Factory {
     public Converter<?, String> stringConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
         Converter<?, String> converter = null;
         if (type instanceof Class && ((Class<?>)type).isEnum()) {
-            converter = value -> EnumUtils.GetSerializedName((Enum) value);
+            converter = value -> EnumUtils.getSerializedName((Enum) value);
         }
         return converter;
     }

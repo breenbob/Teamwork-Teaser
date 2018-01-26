@@ -1,6 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="conorbreen.com.teamworkteaser">
 
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:resizeable="true"
+        android:smallScreens="true" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -13,14 +20,23 @@
         android:theme="@style/AppTheme">
         <uses-library android:name="android.test.runner"/>
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppTheme.NoActionBar"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- For supporting new larger aspect ratio on newer Android flagship devices, e.g. Samsung Galaxy S8 or LG G6 -->
+        <!-- https://android-developers.googleblog.com/2017/03/update-your-app-to-take-advantage-of.html -->
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="3112287444affb98b84b1e8a48c0172fa1c67514" />
     </application>
 </manifest>

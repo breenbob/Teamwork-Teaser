@@ -8,9 +8,14 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.List;
 
-import conorbreen.com.teamworkteaser.events.ProjectListEvent;
+import conorbreen.com.teamworkteaser.models.enums.ProjectStatus;
+import conorbreen.com.teamworkteaser.models.events.ProjectListEvent;
 import conorbreen.com.teamworkteaser.models.Project;
+import conorbreen.com.teamworkteaser.utils.EnumUtils;
+import io.reactivex.Flowable;
+import io.realm.Case;
 import io.realm.Realm;
+import io.realm.RealmResults;
 import timber.log.Timber;
 
 /**
@@ -48,6 +53,14 @@ public class TeamworkRealmService implements Closeable {
                     Timber.e(throwable, "Project data could not be saved");
                     EventBus.getDefault().post(new ProjectListEvent(false));
                 });
+    }
+
+    public Flowable<RealmResults<Project>> getProjectsByStatus(ProjectStatus status) {
+        String value = EnumUtils.getSerializedName(status);
+        return realm.where(Project.class)
+                .equalTo("status", value, Case.INSENSITIVE)
+                .findAllAsync()
+                .asFlowable();
     }
 
     @Override

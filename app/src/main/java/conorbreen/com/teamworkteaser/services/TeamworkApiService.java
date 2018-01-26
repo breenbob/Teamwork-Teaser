@@ -1,5 +1,10 @@
 package conorbreen.com.teamworkteaser.services;
 
+import com.google.common.reflect.TypeToken;
+
+import org.greenrobot.eventbus.EventBus;
+
+import conorbreen.com.teamworkteaser.models.events.StarEvent;
 import conorbreen.com.teamworkteaser.retrofit.RestClient;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
@@ -35,7 +40,37 @@ public class TeamworkApiService {
                     Timber.d("%d projects received.", response.getProjects().size());
                     realmService.saveProjects(response.getProjects());
                 }, throwable -> {
-                    Timber.d("Data could not be downloaded: %s", throwable.toString());
+                    Timber.d("GetAllProjects Api call failed with error: %s", throwable.toString());
+                });
+    }
+
+    public void starProject(int projectId) {
+        RestClient.getInstance().getApiService().starProject(projectId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    Timber.d(response.isSuccessful() ? "Project starred: %s" : "Project could not be starred: %s", response.message());
+                    EventBus.getDefault().post(new StarEvent(true, true));
+                }, throwable -> {
+                    Timber.d("StarProject Api call failed with error: %s", throwable.toString());
+
+                    // Let UI thread know so it can update realm / show a snackbar
+                    EventBus.getDefault().post(new StarEvent(false, true));
+                });
+    }
+
+    public void unstarProject(int projectId) {
+        RestClient.getInstance().getApiService().unstarProject(projectId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(response -> {
+                    Timber.d(response.isSuccessful() ? "Project unstarred: %s" : "Project could not be unstarred: %s", response.message());
+                    EventBus.getDefault().post(new StarEvent(true, false));
+                }, throwable -> {
+                    Timber.d("StarProject Api call failed with error: %s", throwable.toString());
+
+                    // Let UI thread know so it can update realm / show a snackbar
+                    EventBus.getDefault().post(new StarEvent(false, false));
                 });
     }
 }
