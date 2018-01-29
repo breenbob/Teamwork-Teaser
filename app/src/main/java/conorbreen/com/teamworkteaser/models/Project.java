@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -24,6 +25,9 @@ public class Project extends RealmObject implements Parcelable {
 
     @SerializedName("company")
     private Company company;
+
+    @SerializedName("companyId")
+    private int companyId;
 
     @SerializedName("starred")
     private boolean starred;
@@ -53,6 +57,9 @@ public class Project extends RealmObject implements Parcelable {
     @SerializedName("created-on")
     private Date createdOn;
 
+    @SerializedName("category")
+    private Category category;
+
     @SerializedName("start-page")
     private String startPage;
 
@@ -74,12 +81,32 @@ public class Project extends RealmObject implements Parcelable {
     @SerializedName("harvest-timers-enabled")
     private boolean harvestTimersEnabled;
 
+    @SerializedName("category-id")
+    private int categoryId;
+
+    @SerializedName("tags")
+    private RealmList<Tag> tags;
+
+    @SerializedName("replyByEmailEnabled")
+    private boolean replyByEmailEnabled;
+
+    @SerializedName("privacyEnabled")
+    private boolean privacyEnabled;
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public int getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(int companyId) {
+        this.companyId = companyId;
     }
 
     public Company getCompany() {
@@ -162,6 +189,14 @@ public class Project extends RealmObject implements Parcelable {
         this.createdOn = createdOn;
     }
 
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public String getStartPage() {
         return startPage;
     }
@@ -218,6 +253,39 @@ public class Project extends RealmObject implements Parcelable {
         this.harvestTimersEnabled = harvestTimersEnabled;
     }
 
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public RealmList<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(RealmList<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public boolean isReplyByEmailEnabled() {
+        return replyByEmailEnabled;
+    }
+
+    public void setReplyByEmailEnabled(boolean replyByEmailEnabled) {
+        this.replyByEmailEnabled = replyByEmailEnabled;
+    }
+
+    public boolean isPrivacyEnabled() {
+        return privacyEnabled;
+    }
+
+    public void setPrivacyEnabled(boolean privacyEnabled) {
+        this.privacyEnabled = privacyEnabled;
+    }
+
+
     public Project() {
     }
 
@@ -230,6 +298,7 @@ public class Project extends RealmObject implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(this.id);
         dest.writeParcelable(this.company, flags);
+        dest.writeInt(this.companyId);
         dest.writeByte(this.starred ? (byte) 1 : (byte) 0);
         dest.writeString(this.name);
         dest.writeByte(this.showAnnouncement ? (byte) 1 : (byte) 0);
@@ -239,6 +308,7 @@ public class Project extends RealmObject implements Parcelable {
         dest.writeString(this.subStatus);
         dest.writeByte(this.isProjectAdmin ? (byte) 1 : (byte) 0);
         dest.writeLong(this.createdOn != null ? this.createdOn.getTime() : -1);
+        dest.writeParcelable(this.category, flags);
         dest.writeString(this.startPage);
         dest.writeLong(this.startDate != null ? this.startDate.getTime() : -1);
         dest.writeString(this.logo);
@@ -246,11 +316,16 @@ public class Project extends RealmObject implements Parcelable {
         dest.writeLong(this.lastChangedOn != null ? this.lastChangedOn.getTime() : -1);
         dest.writeLong(this.endDate != null ? this.endDate.getTime() : -1);
         dest.writeByte(this.harvestTimersEnabled ? (byte) 1 : (byte) 0);
+        dest.writeInt(this.categoryId);
+        dest.writeTypedList(this.tags);
+        dest.writeByte(this.replyByEmailEnabled ? (byte) 1 : (byte) 0);
+        dest.writeByte(this.privacyEnabled ? (byte) 1 : (byte) 0);
     }
 
     protected Project(Parcel in) {
         this.id = in.readInt();
         this.company = in.readParcelable(Company.class.getClassLoader());
+        this.companyId = in.readInt();
         this.starred = in.readByte() != 0;
         this.name = in.readString();
         this.showAnnouncement = in.readByte() != 0;
@@ -261,6 +336,7 @@ public class Project extends RealmObject implements Parcelable {
         this.isProjectAdmin = in.readByte() != 0;
         long tmpCreatedOn = in.readLong();
         this.createdOn = tmpCreatedOn == -1 ? null : new Date(tmpCreatedOn);
+        this.category = in.readParcelable(Category.class.getClassLoader());
         this.startPage = in.readString();
         long tmpStartDate = in.readLong();
         this.startDate = tmpStartDate == -1 ? null : new Date(tmpStartDate);
@@ -271,6 +347,14 @@ public class Project extends RealmObject implements Parcelable {
         long tmpEndDate = in.readLong();
         this.endDate = tmpEndDate == -1 ? null : new Date(tmpEndDate);
         this.harvestTimersEnabled = in.readByte() != 0;
+        this.categoryId = in.readInt();
+
+        // Had to be added custom as Parcelable generator doesn't support RealmLists
+        this.tags = new RealmList<>();
+        this.tags.addAll(in.createTypedArrayList(Tag.CREATOR));
+
+        this.replyByEmailEnabled = in.readByte() != 0;
+        this.privacyEnabled = in.readByte() != 0;
     }
 
     public static final Creator<Project> CREATOR = new Creator<Project>() {

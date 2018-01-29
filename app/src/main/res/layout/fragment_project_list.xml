@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:layout_width="match_parent"
+<android.support.design.widget.CoordinatorLayout android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,13 +23,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/cvNoResults"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:layout_margin="@dimen/cardview_top_bottom_margin">
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_projects_at_status"/>
+            android:text="@string/no_projects_at_status"
+            android:padding="8dp"/>
 
     </android.support.v7.widget.CardView>
 
-</LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabNewProject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_add_black_24dp"
+        app:layout_anchor="@id/swipeRefreshProjectList"
+        app:layout_anchorGravity="bottom|right|end"
+        app:fabSize="normal"
+        app:layout_behavior="conorbreen.com.teamworkteaser.ui.behaviours.FABScrollBehaviour" />
+
+</android.support.design.widget.CoordinatorLayout>

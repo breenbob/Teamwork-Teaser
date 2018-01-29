@@ -1,6 +1,8 @@
 package conorbreen.com.teamworkteaser.ui.views;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -9,6 +11,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.flexbox.FlexboxLayout;
 import com.jakewharton.rxbinding2.widget.RxCompoundButton;
 
 import java.util.concurrent.TimeUnit;
@@ -24,10 +28,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import conorbreen.com.teamworkteaser.R;
 import conorbreen.com.teamworkteaser.models.Project;
+import conorbreen.com.teamworkteaser.models.Tag;
 import conorbreen.com.teamworkteaser.services.TeamworkApiService;
 import conorbreen.com.teamworkteaser.services.TeamworkRealmService;
+import conorbreen.com.teamworkteaser.ui.UIConstants;
 import conorbreen.com.teamworkteaser.utils.ApiUtils;
+import conorbreen.com.teamworkteaser.utils.BitmapUtils;
+import conorbreen.com.teamworkteaser.utils.DateUtils;
+import conorbreen.com.teamworkteaser.utils.TypefaceUtils;
 import conorbreen.com.teamworkteaser.utils.UnitUtils;
+import fisk.chipcloud.ChipCloud;
+import fisk.chipcloud.ChipCloudConfig;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import timber.log.Timber;
@@ -52,6 +63,15 @@ public class ProjectItemLayout extends LinearLayout {
 
     @BindView(R.id.tvProjectDesc)
     TextView tvProjectDesc;
+
+    @BindView(R.id.llProjectDateRange)
+    LinearLayout llProjectDateRange;
+
+    @BindView(R.id.tvProjectDateRange)
+    TextView tvProjectDateRange;
+
+    @BindView(R.id.flexboxTags)
+    FlexboxLayout flexboxTags;
     //endregion
 
     private Disposable disposable;
@@ -75,6 +95,8 @@ public class ProjectItemLayout extends LinearLayout {
         inflate(getContext(), R.layout.view_project_item, this);
         ButterKnife.bind(this);
 
+        setCustomTypeface();
+
         // The card view elevation/shadows requires padding in parent view to display correctly...
         // ...but any padding added declaratively in XML layout root element is lost when view is inflated as attributes are merged
         int paddingTopBottom = (int) getResources().getDimension(R.dimen.cardview_top_bottom_margin);
@@ -88,11 +110,60 @@ public class ProjectItemLayout extends LinearLayout {
         setClipToPadding(false);
     }
 
+    private void setCustomTypeface() {
+        tvProjectName.setTypeface(TypefaceUtils.resolveTypeface(UIConstants.Fonts.Montserrat_Regular));
+        tvProjectDesc.setTypeface(TypefaceUtils.resolveTypeface(UIConstants.Fonts.Montserrat_Light));
+        tvProjectDateRange.setTypeface(TypefaceUtils.resolveTypeface(UIConstants.Fonts.Montserrat_Light));
+    }
+
     public void setProject(Project project)
     {
         tvProjectName.setText(project.getName());
-        tvProjectDesc.setText(project.getDescription());
+
         cbStarred.setChecked(project.isStarred());
+        tvProjectDesc.setText(project.getDescription());
+        tvProjectDesc.setVisibility(!TextUtils.isEmpty(project.getDescription()) ? View.VISIBLE : View.GONE);
+
+        // Start & End date can both be empty in API response
+        if (project.getStartDate() != null && project.getEndDate() != null) {
+            tvProjectDateRange.setText(String.format("%s - %s", DateUtils.formatDate(project.getStartDate()), DateUtils.formatDate(project.getEndDate())));
+            llProjectDateRange.setVisibility(View.VISIBLE);
+        }
+        else if (project.getStartDate() != null) {
+            tvProjectDateRange.setText(DateUtils.formatDate(project.getStartDate()));
+            llProjectDateRange.setVisibility(View.VISIBLE);
+        }
+        else if (project.getEndDate() != null) {
+            tvProjectDateRange.setText(DateUtils.formatDate(project.getEndDate()));
+            llProjectDateRange.setVisibility(View.VISIBLE);
+        } else {
+            llProjectDateRange.setVisibility(View.GONE);
+        }
+
+        if (project.getTags() != null && project.getTags().size() > 0) {
+            ChipCloudConfig config = new ChipCloudConfig()
+                    .selectMode(ChipCloud.SelectMode.none)
+                    .uncheckedChipColor(Color.parseColor("#efefef"))
+                    .uncheckedTextColor(Color.parseColor("#666666"))
+                    .useInsetPadding(true)
+                    .typeface(TypefaceUtils.resolveTypeface(UIConstants.Fonts.Montserrat_Light));
+
+            ChipCloud chipCloud = new ChipCloud(getContext(), flexboxTags, config);
+
+            for (Tag tag : project.getTags()) {
+                // ChipCloud gives no control over individual chip colours...
+                // ... I upvoted this: https://github.com/fiskurgit/ChipCloud/issues/36
+                // ... so I thought maybe adding the tag colour as the drawable image might work?
+                // Unfortunately ColorDrawable won't work as ChipCloud requires a BitmapDrawable internally.
+                Bitmap bitmap = BitmapUtils.createImage(100, 100, tag.getColor());
+                Drawable bitmapDrawable = BitmapUtils.convertBitmapToDrawable(getContext(), bitmap);
+                chipCloud.addChip(tag.getName(), bitmapDrawable);
+            }
+
+            flexboxTags.setVisibility(View.VISIBLE);
+        } else {
+            flexboxTags.setVisibility(View.GONE);
+        }
 
         // Use Jake Wharton's RxBindings plugin to call Teamwork Api and update Realmobject on checked change
         disposable = RxCompoundButton
@@ -114,6 +185,8 @@ public class ProjectItemLayout extends LinearLayout {
                         .centerCrop()
                         .placeholder(placeholderGrey))
                     .into(ivProjectLogo);
+
+            ivProjectLogo.setPadding(0, 0, 0, 0);
         } else {
             Drawable noImageDrawable;
 
@@ -186,6 +259,10 @@ public class ProjectItemLayout extends LinearLayout {
                     setRealmObjectStarred(project, true);
                     Snackbar.make(cbStarred, R.string.snackbar_unstar_error, Snackbar.LENGTH_SHORT).show();
                 });
+    }
+
+    public CardView getCardView() {
+        return cvProjectItem;
     }
 
     public void unsubscribe() {

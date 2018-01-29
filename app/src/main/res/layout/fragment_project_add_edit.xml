@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="320dp"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_project_name"
+            android:id="@+id/tvProjectName"
+            style="@style/AppTheme.Label" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etProjectName"
+            android:lines="1"
+            android:maxLines="1" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_project_desc"
+            android:id="@+id/tvProjectDesc"
+            style="@style/AppTheme.Label" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/etProjectDesc"
+            android:inputType="textMultiLine"
+            android:isScrollContainer="true"
+            android:nestedScrollingEnabled="true"
+            android:focusable="true"
+            android:maxLines="4" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_project_start_date"
+            android:id="@+id/tvProjectStartDate"
+            style="@style/AppTheme.Label" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnProjectStartDate"
+            android:text="@string/hint_select_date"
+            android:background="@android:color/white"
+            android:stateListAnimator="@null"
+            android:gravity="start|center_vertical"
+            android:theme="@style/AppTheme.FlatButton" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_project_end_date"
+            android:id="@+id/tvProjectEndDate"
+            style="@style/AppTheme.Label" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnProjectEndDate"
+            android:text="@string/hint_select_date"
+            android:background="@android:color/white"
+            android:stateListAnimator="@null"
+            android:gravity="start|center_vertical"
+            android:theme="@style/AppTheme.FlatButton" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/hint_project_category"
+            android:id="@+id/tvProjectCategory"
+            style="@style/AppTheme.Label" />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spnCategory"
+            android:gravity="start|center_vertical" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <android.support.v4.widget.Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"/>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnCancel"
+                android:text="@string/button_cancel"
+                android:theme="@style/AppTheme.FlatButton" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/btnSaveProject"
+                android:text="@string/button_save"
+                android:theme="@style/AppTheme.DarkBlueButton" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>

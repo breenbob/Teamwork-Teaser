@@ -1,6 +1,7 @@
 package conorbreen.com.teamworkteaser;
 
 import android.app.Application;
+import android.content.Context;
 
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
@@ -17,9 +18,13 @@ import io.realm.RealmConfiguration;
  * then (as a last resort) the Multidex support library could be referenced, and this could be changed to extend MultiDexApplication to allow us to exceed that 65k limit
  */
 public class MainApplication extends Application {
+    private static Context context;
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        context = getApplicationContext();
 
         if (!BuildConfig.DEBUG) {
             Fabric.with(this, new Crashlytics());
@@ -35,5 +40,9 @@ public class MainApplication extends Application {
                 .build();
 
         Realm.setDefaultConfiguration(config);
+    }
+
+    public static Context getContext() {
+        return context;
     }
 }

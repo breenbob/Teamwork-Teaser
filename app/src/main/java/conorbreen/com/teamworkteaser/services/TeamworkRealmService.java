@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import conorbreen.com.teamworkteaser.models.Category;
 import conorbreen.com.teamworkteaser.models.enums.ProjectStatus;
 import conorbreen.com.teamworkteaser.models.events.DataRefreshFinishEvent;
 import conorbreen.com.teamworkteaser.models.Project;
@@ -16,7 +17,9 @@ import conorbreen.com.teamworkteaser.utils.EnumUtils;
 import io.reactivex.Flowable;
 import io.realm.Case;
 import io.realm.Realm;
+import io.realm.RealmObject;
 import io.realm.RealmResults;
+import io.realm.Sort;
 import timber.log.Timber;
 
 /**
@@ -106,11 +109,18 @@ public class TeamworkRealmService implements Closeable {
     }
 
     /**
-     * Project is current if End date has not yet been reached.
+     * Project is current if status is active, end date has not yet been reached,
+     * and subStatus is not completed.
      */
     private Flowable<RealmResults<Project>> getCurrentProjects() {
+        String value = EnumUtils.getSerializedName(ProjectStatus.Active);
         return realm.where(Project.class)
-                .lessThanOrEqualTo("endDate", new Date())
+                .greaterThan("endDate", new Date())
+                .and()
+                .equalTo("status", value, Case.INSENSITIVE)
+                .and()
+                .not()
+                .equalTo("subStatus", "comleted")
                 .findAllAsync()
                 .asFlowable();
     }
@@ -129,13 +139,13 @@ public class TeamworkRealmService implements Closeable {
     }
 
     /**
-     * Project is probably late if End date has been surpassed but project is still active
-     * (from testing web portal I can tell the completed sub-status seems does not come into play here)
+     * Project is probably late if End date has been surpassed but project is still active,
+     * (from testing in the web portal I can tell the completed sub-status does not seem to come into play here)
      */
     private Flowable<RealmResults<Project>> getLateProjects() {
         String value = EnumUtils.getSerializedName(ProjectStatus.Active);
         return realm.where(Project.class)
-                .greaterThan("endDate", new Date())
+                .lessThan("endDate", new Date())
                 .and()
                 .equalTo("status", value, Case.INSENSITIVE)
                 .findAllAsync()
@@ -144,6 +154,28 @@ public class TeamworkRealmService implements Closeable {
 
     public void updatedManagedObject(Realm.Transaction transaction, Realm.Transaction.OnError onError, Realm.Transaction.OnSuccess onSuccess) {
         realm.executeTransactionAsync(transaction, onSuccess, onError);
+    }
+
+    /**
+     * Gets all categories currently stored in the database.
+     */
+    public Flowable<RealmResults<Category>> getAllCategories() {
+        return realm.where(Category.class)
+                .sort("name", Sort.ASCENDING)
+                .findAllAsync()
+                .asFlowable();
+    }
+
+    public  <E extends RealmObject> List<E> copyFromRealm(RealmResults<E> results)  {
+        return realm.copyFromRealm(results);
+    }
+
+    public  <E extends RealmObject> E copyFromRealm(E result)  {
+        if (result.isManaged()) {
+            return realm.copyFromRealm(result);
+        } else {
+            return result;
+        }
     }
 
     @Override

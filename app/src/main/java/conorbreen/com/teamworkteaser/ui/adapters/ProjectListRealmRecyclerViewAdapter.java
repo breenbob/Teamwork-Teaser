@@ -1,6 +1,8 @@
 package conorbreen.com.teamworkteaser.ui.adapters;
 
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import conorbreen.com.teamworkteaser.R;
 import conorbreen.com.teamworkteaser.models.Project;
+import conorbreen.com.teamworkteaser.ui.UIConstants;
+import conorbreen.com.teamworkteaser.ui.fragments.ProjectDetailsDialogFragment;
 import conorbreen.com.teamworkteaser.ui.views.ProjectItemLayout;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
@@ -62,6 +66,11 @@ public class ProjectListRealmRecyclerViewAdapter extends RealmRecyclerViewAdapte
         // Dispose of existing subscriptions (in case view is being recycled)
         holder.projectItem.unsubscribe();
         holder.projectItem.setProject(obj);
+        holder.setOnClickListener(onClick -> {
+            FragmentManager fm = ((AppCompatActivity)context).getSupportFragmentManager();
+            ProjectDetailsDialogFragment f = ProjectDetailsDialogFragment.newInstance(obj);
+            f.show(fm, UIConstants.FragmentTags.ProjectDetails);
+        });
     }
 
     @Override
@@ -70,13 +79,30 @@ public class ProjectListRealmRecyclerViewAdapter extends RealmRecyclerViewAdapte
         return getItem(index).getId();
     }
 
-    class ProjectViewHolder extends RecyclerView.ViewHolder {
+    public interface IClickableViewHolder {
+        void onItemSelected(View caller);
+    }
+
+    class ProjectViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private IClickableViewHolder mListener;
+        private ProjectItemLayout projectItem;
         public Project data;
-        ProjectItemLayout projectItem;
 
         ProjectViewHolder(View view) {
             super(view);
             projectItem = (ProjectItemLayout)view;
+            projectItem.getCardView().setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mListener != null) {
+                mListener.onItemSelected(v);
+            }
+        }
+
+        public void setOnClickListener(IClickableViewHolder mListener) {
+            this.mListener = mListener;
         }
     }
 }

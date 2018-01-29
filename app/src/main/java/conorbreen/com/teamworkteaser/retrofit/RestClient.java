@@ -16,6 +16,11 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import conorbreen.com.teamworkteaser.BuildConfig;
+import conorbreen.com.teamworkteaser.gson.MultiFormatDateDeserializer;
+import conorbreen.com.teamworkteaser.gson.NullableIntTypeAdapter;
+import conorbreen.com.teamworkteaser.gson.ProjectDeserializationStrategy;
+import conorbreen.com.teamworkteaser.gson.ProjectSerializer;
+import conorbreen.com.teamworkteaser.models.Project;
 import conorbreen.com.teamworkteaser.retrofit.converterFactories.EnumConverterFactory;
 import conorbreen.com.teamworkteaser.retrofit.interceptors.RequestInterceptor;
 import okhttp3.OkHttpClient;
@@ -55,29 +60,29 @@ public class RestClient {
 
         OkHttpClient client = builder.build();
 
-        // Had to use custom type adapter to check for nulls instead of following simpler code
-        // as fetching projects from API with status=ALL brought back some projects with empty dates
+        // Had to use custom type adapters to allow for multiple date formats, and check for nulls
+        // as project start/end used full ISO 8601 date format, whereas project created/updated used short yyyyMMdd format.
+        // Also, fetching projects from API with status=ALL brought back some projects with empty dates
         // which caused Json parsing exceptions
+
         /*Gson gson =  new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
                 .create();*/
 
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
-            // Use Gson builder to tell gson to use ISO 8601 date format when parsing date properties
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.UK);
-            @Override
-            public Date deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
-                    throws JsonParseException {
-                try {
-                    return df.parse(json.getAsString());
-                } catch (ParseException e) {
-                    return null;
-                }
-            }
-        });
-
-        Gson gson = gsonBuilder.create();
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new MultiFormatDateDeserializer())
+                .registerTypeAdapter(Number.class, new NullableIntTypeAdapter())
+                .registerTypeAdapter(int.class, new NullableIntTypeAdapter())
+                .registerTypeAdapter(Integer.class, new NullableIntTypeAdapter())
+                .registerTypeAdapter(double.class, new NullableIntTypeAdapter())
+                .registerTypeAdapter(Double.class, new NullableIntTypeAdapter())
+                .registerTypeAdapter(long.class, new NullableIntTypeAdapter())
+                .registerTypeAdapter(Long.class, new NullableIntTypeAdapter())
+                .registerTypeAdapter(Project.class, new ProjectSerializer())
+                // Important as some fields only exist in posted data, and int fields that don't exist or have empty values
+                // in get models will throw number format exceptions
+                .addDeserializationExclusionStrategy(new ProjectDeserializationStrategy())
+                .create();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BuildConfig.TeamworkApiBaseUrl)

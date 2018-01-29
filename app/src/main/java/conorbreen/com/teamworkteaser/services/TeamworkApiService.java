@@ -1,12 +1,11 @@
 package conorbreen.com.teamworkteaser.services;
 
-import com.google.common.reflect.TypeToken;
-
 import org.greenrobot.eventbus.EventBus;
 
+import conorbreen.com.teamworkteaser.models.PostProject;
+import conorbreen.com.teamworkteaser.models.Project;
 import conorbreen.com.teamworkteaser.models.enums.ProjectStatus;
 import conorbreen.com.teamworkteaser.models.events.DataRefreshFinishEvent;
-import conorbreen.com.teamworkteaser.models.events.StarEvent;
 import conorbreen.com.teamworkteaser.retrofit.RestClient;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -60,6 +59,18 @@ public class TeamworkApiService {
 
     public Observable<Response<ResponseBody>> unstarProject(int projectId) {
         return RestClient.getInstance().getApiService().unstarProject(projectId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Response<ResponseBody>> createProject(Project newProject) {
+        return RestClient.getInstance().getApiService().createProject(new PostProject(newProject))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public Observable<Response<ResponseBody>> updateProject(Project existingProject) {
+        return RestClient.getInstance().getApiService().updateProject(existingProject.getId(), new PostProject(existingProject))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }

@@ -1,6 +1,7 @@
 package conorbreen.com.teamworkteaser.ui.activities;
 
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -11,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 
 
 import org.greenrobot.eventbus.EventBus;
@@ -27,6 +30,7 @@ import conorbreen.com.teamworkteaser.services.TeamworkApiService;
 import conorbreen.com.teamworkteaser.services.TeamworkRealmService;
 import conorbreen.com.teamworkteaser.ui.adapters.FragmentTabPagerAdapter;
 import conorbreen.com.teamworkteaser.ui.fragments.ProjectListFragment;
+import conorbreen.com.teamworkteaser.utils.ApiUtils;
 import timber.log.Timber;
 
 /**

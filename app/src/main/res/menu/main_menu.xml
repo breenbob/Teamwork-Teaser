@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:title="@string/app_name">
+        <menu>
+            <item
+                android:id="@+id/nav_chat"
+                android:icon="@drawable/ic_chat_black_24dp"
+                android:title="@string/nav_chat" />
+            <item
+                android:id="@+id/nav_collaborators"
+                android:icon="@drawable/ic_supervisor_account_black_24dp"
+                android:title="@string/nav_collaborators" />
+            <item
+                android:id="@+id/nav_documents"
+                android:icon="@drawable/ic_assignment_ind_black_24dp"
+                android:title="@string/nav_documents" />
+        </menu>
+    </item>
+</menu>

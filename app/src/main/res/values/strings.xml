@@ -12,6 +12,21 @@
     <string name="tab_late">Late</string>
     <string name="tab_archived">Archived</string>
 
+    <!-- Edit/Add project dialog fragment -->
+    <string name="dialog_edit_project">Edit Project</string>
+    <string name="dialog_create_project">Create Project</string>
+    <string name="hint_project_name">Project Name</string>
+    <string name="hint_project_desc">Description</string>
+    <string name="hint_project_start_date">Start Date</string>
+    <string name="hint_select_date">Select Date&#8230;</string>
+    <string name="hint_project_end_date">End Date</string>
+    <string name="hint_project_category">Category</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_save">Save Project</string>
+
+    <!-- Validation -->
+    <string name="val_project_name_req">Project name is required!</string>
+
     <!-- Accessibility -->
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -23,4 +38,13 @@
     <string name="snackbar_unstar_success">The project was unstarred successfully!</string>
     <string name="snackbar_data_refresh_error">Data sync failed. Do you have network access?</string>
     <string name="snackbar_button_retry">Retry</string>
+    <string name="snackbar_create_project_failed">Could not create a new project!</string>
+    <string name="snackbar_update_project_failed">Could not update the project!</string>
+    <string name="snackbar_create_project_succeeded">Project created successfully!</string>
+    <string name="snackbar_update_project_succeeded">Project updated successfully!</string>
+
+    <!-- Dummy Navigation -->
+    <string name="nav_chat">Chat</string>
+    <string name="nav_collaborators">Collaborators</string>
+    <string name="nav_documents">Documents</string>
 </resources>

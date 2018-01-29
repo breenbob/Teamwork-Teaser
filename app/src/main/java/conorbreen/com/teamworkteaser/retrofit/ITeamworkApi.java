@@ -1,12 +1,17 @@
 package conorbreen.com.teamworkteaser.retrofit;
 
+import conorbreen.com.teamworkteaser.models.PostProject;
+import conorbreen.com.teamworkteaser.models.Project;
 import conorbreen.com.teamworkteaser.models.enums.OrderBy;
 import conorbreen.com.teamworkteaser.models.ProjectList;
 import conorbreen.com.teamworkteaser.models.enums.ProjectStatus;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -50,6 +55,12 @@ public interface ITeamworkApi {
 
     @PUT("/projects/{project_id}/unstar.json")
     Observable<Response<ResponseBody>> unstarProject(@Path("project_id") int projectId);
+
+    @POST("/projects.json")
+    Observable<Response<ResponseBody>> createProject(@Body PostProject project);
+
+    @PUT("/projects/{project_id}.json")
+    Observable<Response<ResponseBody>> updateProject(@Path("project_id") int projectId, @Body PostProject project);
 
     //endregion
 }
