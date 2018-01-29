@@ -38,8 +38,8 @@
     <string name="snackbar_unstar_success">The project was unstarred successfully!</string>
     <string name="snackbar_data_refresh_error">Data sync failed. Do you have network access?</string>
     <string name="snackbar_button_retry">Retry</string>
-    <string name="snackbar_create_project_failed">Could not create a new project!</string>
-    <string name="snackbar_update_project_failed">Could not update the project!</string>
+    <string name="snackbar_create_project_failed">Could not create a new project: %s</string>
+    <string name="snackbar_update_project_failed">Could not update the project: %s</string>
     <string name="snackbar_create_project_succeeded">Project created successfully!</string>
     <string name="snackbar_update_project_succeeded">Project updated successfully!</string>
 

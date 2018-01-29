@@ -328,17 +328,18 @@ public class ProjectDetailsDialogFragment extends DialogFragment implements Date
                     Timber.d(response.isSuccessful() ? "Project created: %s" : "Project could not be created: %s", response.message());
 
                     if (!response.isSuccessful()) {
-                        Toast.makeText(getContext(), R.string.snackbar_create_project_failed, Toast.LENGTH_SHORT).show();
+                        String errorMsg = String.format(getResources().getString(R.string.snackbar_create_project_failed), response.message());
+                        Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
                     } else {
                         // Since the API does not return new project id, it is safer to sync local data with API again rather than
                         // assume any kind of local primary key
-                        Toast.makeText(getContext(), R.string.snackbar_create_project_succeeded, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), R.string.snackbar_create_project_succeeded, Toast.LENGTH_LONG).show();
                         getTargetFragment().onActivityResult(getTargetRequestCode(), UIConstants.ResponseCodes.CreateSucceeded, null);
                         dismiss();
                     }
                 }, throwable -> {
                     Timber.e(throwable, "Project create Api call failed with error");
-                    Toast.makeText(getContext(), R.string.snackbar_create_project_failed, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.snackbar_create_project_failed, Toast.LENGTH_LONG).show();
                 });
     }
 
@@ -350,19 +351,23 @@ public class ProjectDetailsDialogFragment extends DialogFragment implements Date
                     Timber.d(response.isSuccessful() ? "Project updated: %s" : "Project could not be updated: %s", response.message());
 
                     if (!response.isSuccessful()) {
-                        Toast.makeText(getContext(), R.string.snackbar_update_project_failed, Toast.LENGTH_SHORT).show();
+                        String errorMsg = String.format(getResources().getString(R.string.snackbar_update_project_failed), response.message());
+                        Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
                     } else {
                         // For project updates it is ok to update the local Realm object
                         realmService.updatedManagedObject(realm -> realm.copyToRealmOrUpdate(project),
                                 onSuccess -> {
-                                    Toast.makeText(getContext(), R.string.snackbar_update_project_succeeded, Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), R.string.snackbar_update_project_succeeded, Toast.LENGTH_LONG).show();
                                     dismiss();
                                 },
-                                () -> Toast.makeText(getContext(), R.string.snackbar_update_project_failed, Toast.LENGTH_SHORT).show());
+                                () -> {
+                                    String errorMsg = String.format(getResources().getString(R.string.snackbar_update_project_failed), "Error saving to local database.");
+                                    Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
+                                });
                     }
                 }, throwable -> {
                     Timber.e(throwable, "Project update Api call failed with error");
-                    Toast.makeText(getContext(), R.string.snackbar_update_project_failed, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.snackbar_update_project_failed, Toast.LENGTH_LONG).show();
                 });
     }
 

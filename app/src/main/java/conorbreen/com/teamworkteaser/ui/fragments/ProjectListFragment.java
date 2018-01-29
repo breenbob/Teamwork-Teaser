@@ -124,7 +124,7 @@ public class ProjectListFragment extends Fragment {
                         FragmentManager fm = getActivity().getSupportFragmentManager();
                         ProjectDetailsDialogFragment f = new ProjectDetailsDialogFragment();
                         // So we know if project was created successfully in remote API so we can trigger data refresh
-                        setTargetFragment(this, UIConstants.RequestCodes.CreateProjectRequest);
+                        setTargetFragment(f, UIConstants.RequestCodes.CreateProjectRequest);
                         f.show(fm, UIConstants.FragmentTags.ProjectDetails);
                     }
                 })

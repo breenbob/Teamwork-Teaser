@@ -20,15 +20,40 @@ public class ProjectSerializer implements JsonSerializer<Project> {
 
     @Override
     public JsonElement serialize(final Project value, final Type type, final JsonSerializationContext context) {
-        // Use default serialization as the basis
-        final JsonObject jsonObj = context.serialize(value).getAsJsonObject();
+        // Use default serialization as the basis - treat is as non-Project class to avoid StackOverflowException!
+        final JsonObject jsonObj = new JsonObject();
 
-        // Only way to cater for serialization of multiple date formats
-        jsonObj.remove("startDate");
-        jsonObj.remove("endDate");
-        jsonObj.remove("created-on");
-        jsonObj.remove("last-changed-on");
+        jsonObj.addProperty("id", value.getId());
+        jsonObj.addProperty("companyId", value.getCompanyId());
+        jsonObj.addProperty("starred", value.isStarred());
+        jsonObj.addProperty("name", value.getName());
+        jsonObj.addProperty("show-announcement", value.isShowAnnouncement());
+        jsonObj.addProperty("announcement", value.getAnnouncement());
+        jsonObj.addProperty("description", value.getDescription());
+        jsonObj.addProperty("status", value.getStatus());
+        jsonObj.addProperty("subStatus", value.getSubStatus());
+        jsonObj.addProperty("isProjectAdmin", value.isProjectAdmin());
+        jsonObj.addProperty("startPage", value.getStartPage());
+        jsonObj.addProperty("logo", value.getLogo());
+        jsonObj.addProperty("notifyeveryone", value.isNotifyEveryone());
+        jsonObj.addProperty("harvest-timers-enabled", value.isHarvestTimersEnabled());
+        jsonObj.addProperty("categoryId", value.getCategoryId());
+        jsonObj.addProperty("replyByEmailEnabled", value.isReplyByEmailEnabled());
+        jsonObj.addProperty("privacyEnabled", value.isPrivacyEnabled());
 
+        if (value.getCompany() != null) {
+            jsonObj.add("company", context.serialize(value.getCompany()));
+        }
+
+        if (value.getTags() != null) {
+            jsonObj.add("tags", context.serialize(value.getTags()));
+        }
+
+        if (value.getCategory() != null) {
+            jsonObj.add("category", context.serialize(value.getCategory()));
+        }
+
+        // Reason for custom json serializer - to handle the 2 (optional) date formats used:
         if (value.getStartDate() != null) {
             jsonObj.addProperty("startDate", df.format(value.getStartDate()));
         } else {
