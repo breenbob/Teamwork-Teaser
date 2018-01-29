@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public enum ProjectStatus {
+    @SerializedName("ALL")
+    All,
     @SerializedName("ACTIVE")
     Active,
     @SerializedName("ARCHIVED")
@@ -16,5 +18,5 @@ public enum ProjectStatus {
     @SerializedName("LATE")
     Late,
     @SerializedName("COMPLETED")
-    Completed;
+    Completed
 }

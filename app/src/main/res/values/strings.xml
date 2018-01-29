@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">TeamWork Teaser</string>
+
+    <!-- Main Activity -->
+    <string name="main_activity_title">Projects</string>
+    <string name="no_projects_at_status">There are no projects at this status.</string>
+
+    <!-- Status Tabs -->
+    <string name="tab_active">Active</string>
+    <string name="tab_current">Current</string>
+    <string name="tab_completed">Completed</string>
+    <string name="tab_late">Late</string>
+    <string name="tab_archived">Archived</string>
+
+    <!-- Accessibility -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Snackbar Messages -->
+    <string name="snackbar_star_error">The project could not be starred!</string>
+    <string name="snackbar_star_success">The project was starred successfully!</string>
+    <string name="snackbar_unstar_error">The project could not be unstarred!</string>
+    <string name="snackbar_unstar_success">The project was unstarred successfully!</string>
+    <string name="snackbar_data_refresh_error">Data sync failed. Do you have network access?</string>
+    <string name="snackbar_button_retry">Retry</string>
 </resources>

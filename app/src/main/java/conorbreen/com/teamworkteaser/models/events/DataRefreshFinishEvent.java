@@ -7,8 +7,8 @@ package conorbreen.com.teamworkteaser.models.events;
 /**
  * Arbitrary class to represent a "Projects list fetched successfully from API" event.
  */
-public class ProjectListEvent extends EventBase {
-    public ProjectListEvent(boolean successful)
+public class DataRefreshFinishEvent extends EventBase {
+    public DataRefreshFinishEvent(boolean successful)
     {
         this.successful = successful;
     }

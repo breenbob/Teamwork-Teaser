@@ -17,20 +17,25 @@ repositories {
 apply plugin: 'realm-android'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "conorbreen.com.teamworkteaser"
         minSdkVersion 15
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        // Teamwork account username
+        buildConfigField 'String', 'TeamworkUserName', '"yat@triplespin.com"'
 
         // The Teamwork API dummy user account basic authentication token:
         buildConfigField 'String', 'TeamworkApiToken', '"twp_TEbBXGCnvl2HfvXWfkLUlzx92e3T"'
 
         // The Teamwork API base URL for dummy site
         buildConfigField 'String', 'TeamworkApiBaseUrl', '"https://yat.teamwork.com"'
+
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -45,19 +50,18 @@ android {
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
     // compile now deprecated in Gradle in favour of implementation
     // https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration.html#new_configurations
-
-    implementation 'com.android.support:design:26.1.0'
-    implementation 'com.android.support:support-annotations:26.1.0'
-    implementation 'com.android.support:recyclerview-v7:26.1.0'
-    implementation 'com.android.support:cardview-v7:26.1.0'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:27.0.2'
+    implementation 'com.android.support:design:27.0.2'
+    implementation 'com.android.support:support-annotations:27.0.2'
+    implementation 'com.android.support:recyclerview-v7:27.0.2'
+    implementation 'com.android.support:cardview-v7:27.0.2'
     implementation 'io.realm:android-adapters:2.1.1'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'io.reactivex.rxjava2:rxjava:2.1.8'
@@ -67,10 +71,14 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
     // for debugging purposes only
     implementation 'com.squareup.okhttp3:logging-interceptor:3.6.0'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'com.github.bumptech.glide:glide:4.5.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
     implementation 'com.jakewharton.timber:timber:4.6.0'
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    implementation 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:2.0.0'
+    implementation 'com.jakewharton.rxbinding2:rxbinding-recyclerview-v7:2.0.0'
     implementation 'com.google.guava:guava:23.6-android'
     implementation('com.crashlytics.sdk.android:crashlytics:2.8.0@aar') {
         transitive = true;

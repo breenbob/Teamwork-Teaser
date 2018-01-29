@@ -2,7 +2,17 @@ package conorbreen.com.teamworkteaser.retrofit;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 
+import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import conorbreen.com.teamworkteaser.BuildConfig;
@@ -45,10 +55,29 @@ public class RestClient {
 
         OkHttpClient client = builder.build();
 
-        // Use Gson builder to tell gson to use ISO 8601 date format when parsing date properties
-        Gson gson =  new GsonBuilder()
+        // Had to use custom type adapter to check for nulls instead of following simpler code
+        // as fetching projects from API with status=ALL brought back some projects with empty dates
+        // which caused Json parsing exceptions
+        /*Gson gson =  new GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-                .create();
+                .create();*/
+
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(Date.class, new JsonDeserializer<Date>() {
+            // Use Gson builder to tell gson to use ISO 8601 date format when parsing date properties
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.UK);
+            @Override
+            public Date deserialize(final JsonElement json, final Type typeOfT, final JsonDeserializationContext context)
+                    throws JsonParseException {
+                try {
+                    return df.parse(json.getAsString());
+                } catch (ParseException e) {
+                    return null;
+                }
+            }
+        });
+
+        Gson gson = gsonBuilder.create();
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BuildConfig.TeamworkApiBaseUrl)

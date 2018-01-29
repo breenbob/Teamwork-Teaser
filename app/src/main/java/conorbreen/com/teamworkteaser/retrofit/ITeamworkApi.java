@@ -2,6 +2,7 @@ package conorbreen.com.teamworkteaser.retrofit;
 
 import conorbreen.com.teamworkteaser.models.enums.OrderBy;
 import conorbreen.com.teamworkteaser.models.ProjectList;
+import conorbreen.com.teamworkteaser.models.enums.ProjectStatus;
 import io.reactivex.Observable;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
@@ -22,7 +23,7 @@ public interface ITeamworkApi {
     //region Get Projects methods
 
     @GET("/projects.json")
-    Observable<ProjectList> getAllProjects();
+    Observable<ProjectList> getAllProjects(@Query("status") ProjectStatus projectStatus);
 
     @GET("/projects.json")
     // Enum parameter, to differentiate from overload with String parameter for updatedAfterDate below

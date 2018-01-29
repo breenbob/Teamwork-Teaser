@@ -1,8 +1,10 @@
 package conorbreen.com.teamworkteaser.ui.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
@@ -21,11 +23,14 @@ import butterknife.ButterKnife;
 import conorbreen.com.teamworkteaser.R;
 import conorbreen.com.teamworkteaser.models.Project;
 import conorbreen.com.teamworkteaser.models.enums.ProjectStatus;
-import conorbreen.com.teamworkteaser.models.events.ProjectListEvent;
+import conorbreen.com.teamworkteaser.models.events.DataRefreshFinishEvent;
 import conorbreen.com.teamworkteaser.services.TeamworkRealmService;
+import conorbreen.com.teamworkteaser.ui.activities.MainActivity;
 import conorbreen.com.teamworkteaser.ui.adapters.ProjectListRealmRecyclerViewAdapter;
-import conorbreen.com.teamworkteaser.utils.UIConstants;
+import conorbreen.com.teamworkteaser.ui.UIConstants;
+import conorbreen.com.teamworkteaser.utils.ColorUtils;
 import io.reactivex.disposables.Disposable;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import timber.log.Timber;
 
@@ -37,9 +42,10 @@ public class ProjectListFragment extends Fragment {
     //region View Binding
     @BindView(R.id.swipeRefreshProjectList)
     SwipeRefreshLayout swipeRefreshProjectList;
-
     @BindView(R.id.recyclerProjectList)
     RecyclerView recyclerProjectList;
+    @BindView(R.id.cvNoResults)
+    CardView cvNoResults;
     //endregion
 
     private ProjectStatus projectStatus;
@@ -47,6 +53,22 @@ public class ProjectListFragment extends Fragment {
     private TeamworkRealmService realmService;
     private Disposable disposable;
     private RealmResults<Project> projectListResults;
+    private RealmChangeListener<RealmResults<Project>> changeListener = new RealmChangeListener<RealmResults<Project>>() {
+        @Override
+        public void onChange(RealmResults<Project> projects) {
+            Timber.d("RealmResults change listener called for fragment with status %s", projectStatus.toString());
+
+            if (projects.isLoaded() && projects.isValid()) {
+                if (projects.isEmpty()) {
+                    cvNoResults.setVisibility(View.VISIBLE);
+                    recyclerProjectList.setVisibility(View.GONE);
+                } else {
+                    cvNoResults.setVisibility(View.GONE);
+                    recyclerProjectList.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+    };
 
     public static ProjectListFragment newInstance(ProjectStatus status) {
         Bundle bundleStatus = new Bundle();
@@ -67,7 +89,8 @@ public class ProjectListFragment extends Fragment {
 
         ButterKnife.bind(this, v);
 
-        realmService.getProjectsByStatus(projectStatus);
+        setupSwipeRefreshLayout();
+
         disposable = realmService.getProjectsByStatus(projectStatus)
         .subscribe(
                 projects -> {
@@ -80,27 +103,61 @@ public class ProjectListFragment extends Fragment {
         return v;
     }
 
+    private void setupSwipeRefreshLayout() {
+        // Change default swipe refresh indicator color from plain black to use array of much nicer material colors
+        swipeRefreshProjectList.setColorSchemeColors(ColorUtils.getMaterialPalette());
+        swipeRefreshProjectList.setOnRefreshListener(this::refreshData);
+    }
+
+    private void refreshData() {
+        if (getActivity() != null) {
+            swipeRefreshProjectList.setRefreshing(true);
+            ((MainActivity) getActivity()).refreshData(false);
+        }
+    }
+
     private void setupRecyclerView(RealmResults<Project> projects) {
         this.projectListResults = projects;
 
-        if (realmAdapter != null) {
-            realmAdapter = new ProjectListRealmRecyclerViewAdapter(projectListResults);
+         if (realmAdapter == null) {
+            realmAdapter = new ProjectListRealmRecyclerViewAdapter(getContext(), projectListResults);
             recyclerProjectList.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayout.VERTICAL, false));
             recyclerProjectList.setAdapter(realmAdapter);
             recyclerProjectList.setHasFixedSize(true);
-            //recyclerProjectList.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL_LIST));
 
             // Use support library ItemTouchHelper to offer Swipe to delete project from list functionality
             ProjectTouchHelperCallback touchHelperCallback = new ProjectTouchHelperCallback();
             ItemTouchHelper touchHelper = new ItemTouchHelper(touchHelperCallback);
             touchHelper.attachToRecyclerView(recyclerProjectList);
         }
+
+        if (projects.isLoaded() && projects.isValid()) {
+            if (projects.isEmpty()) {
+                cvNoResults.setVisibility(View.VISIBLE);
+                recyclerProjectList.setVisibility(View.GONE);
+            } else {
+                cvNoResults.setVisibility(View.GONE);
+                recyclerProjectList.setVisibility(View.VISIBLE);
+            }
+        }
+
+        // RealmResults doesn't need a change listener to update RecyclerView in real-time as the adapter
+        // extends the RealmRecyclerViewAdapter base class, however I can still add an additional listener
+        // to notify this fragment to show a "No results" message to the user.
+        this.projectListResults.addChangeListener(changeListener);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onProjectListEvent(ProjectListEvent event) {
+    public void onDataRefreshFinish(DataRefreshFinishEvent event) {
         Timber.d("Project data refresh succeeded: %s", String.valueOf(event.isSuccessful()));
-        //TODO: SwipeRefreshLayout.setRefreshing(false)?
+        swipeRefreshProjectList.setRefreshing(false);
+
+        if (!event.isSuccessful()) {
+            // Use Length long when presenting the user with an Action to perform
+            Snackbar.make(getView(), R.string.snackbar_data_refresh_error, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.snackbar_button_retry, onClick -> refreshData())
+                    .show();
+        }
     }
 
     @Override
@@ -113,11 +170,6 @@ public class ProjectListFragment extends Fragment {
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
         disposable.dispose();
     }
 
@@ -127,6 +179,7 @@ public class ProjectListFragment extends Fragment {
 
         try {
             realmService.close();
+            this.projectListResults.removeChangeListener(changeListener);
         } catch (IOException ex) {
             Timber.e(ex);
         }

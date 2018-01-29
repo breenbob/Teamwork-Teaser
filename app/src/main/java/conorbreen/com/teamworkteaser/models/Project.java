@@ -43,6 +43,10 @@ public class Project extends RealmObject implements Parcelable {
     @SerializedName("status")
     private String status;
 
+    @SerializedName("subStatus")
+    // not documented, but used to indicate if a project is completed, i.e. "subStatus":"completed"
+    private String subStatus;
+
     @SerializedName("isProjectAdmin")
     private boolean isProjectAdmin;
 
@@ -134,6 +138,14 @@ public class Project extends RealmObject implements Parcelable {
         this.status = status;
     }
 
+    public String getSubStatus() {
+        return subStatus;
+    }
+
+    public void setSubStatus(String subStatus) {
+        this.subStatus = subStatus;
+    }
+
     public boolean isProjectAdmin() {
         return isProjectAdmin;
     }
@@ -206,6 +218,8 @@ public class Project extends RealmObject implements Parcelable {
         this.harvestTimersEnabled = harvestTimersEnabled;
     }
 
+    public Project() {
+    }
 
     @Override
     public int describeContents() {
@@ -222,6 +236,7 @@ public class Project extends RealmObject implements Parcelable {
         dest.writeString(this.announcement);
         dest.writeString(this.description);
         dest.writeString(this.status);
+        dest.writeString(this.subStatus);
         dest.writeByte(this.isProjectAdmin ? (byte) 1 : (byte) 0);
         dest.writeLong(this.createdOn != null ? this.createdOn.getTime() : -1);
         dest.writeString(this.startPage);
@@ -233,9 +248,6 @@ public class Project extends RealmObject implements Parcelable {
         dest.writeByte(this.harvestTimersEnabled ? (byte) 1 : (byte) 0);
     }
 
-    public Project() {
-    }
-
     protected Project(Parcel in) {
         this.id = in.readInt();
         this.company = in.readParcelable(Company.class.getClassLoader());
@@ -245,6 +257,7 @@ public class Project extends RealmObject implements Parcelable {
         this.announcement = in.readString();
         this.description = in.readString();
         this.status = in.readString();
+        this.subStatus = in.readString();
         this.isProjectAdmin = in.readByte() != 0;
         long tmpCreatedOn = in.readLong();
         this.createdOn = tmpCreatedOn == -1 ? null : new Date(tmpCreatedOn);
@@ -260,7 +273,7 @@ public class Project extends RealmObject implements Parcelable {
         this.harvestTimersEnabled = in.readByte() != 0;
     }
 
-    public static final Parcelable.Creator<Project> CREATOR = new Parcelable.Creator<Project>() {
+    public static final Creator<Project> CREATOR = new Creator<Project>() {
         @Override
         public Project createFromParcel(Parcel source) {
             return new Project(source);

@@ -1,5 +1,6 @@
 package conorbreen.com.teamworkteaser.ui.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import conorbreen.com.teamworkteaser.R;
 import conorbreen.com.teamworkteaser.models.Project;
+import conorbreen.com.teamworkteaser.ui.views.ProjectItemLayout;
 import io.realm.RealmRecyclerViewAdapter;
 import io.realm.RealmResults;
 
@@ -21,12 +23,13 @@ import io.realm.RealmResults;
  */
 
 public class ProjectListRealmRecyclerViewAdapter extends RealmRecyclerViewAdapter<Project, ProjectListRealmRecyclerViewAdapter.ProjectViewHolder> {
-
+    private Context context;
     private boolean inDeletionMode = false;
     private Set<Integer> countersToDelete = new HashSet<>();
 
-    public ProjectListRealmRecyclerViewAdapter(RealmResults<Project> data) {
+    public ProjectListRealmRecyclerViewAdapter(Context context, RealmResults<Project> data) {
         super(data, true);
+        this.context = context;
         // Only set this if the model class has a primary key that is also a integer or long.
         // In that case, {@code getItemId(int)} must also be overridden to return the key.
         // See https://developer.android.com/reference/android/support/v7/widget/RecyclerView.Adapter.html#hasStableIds()
@@ -48,8 +51,7 @@ public class ProjectListRealmRecyclerViewAdapter extends RealmRecyclerViewAdapte
 
     @Override
     public ProjectViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.view_project_item, parent, false);
+        ProjectItemLayout itemView = new ProjectItemLayout(context);
         return new ProjectViewHolder(itemView);
     }
 
@@ -57,8 +59,9 @@ public class ProjectListRealmRecyclerViewAdapter extends RealmRecyclerViewAdapte
     public void onBindViewHolder(ProjectViewHolder holder, int position) {
         final Project obj = getItem(position);
         holder.data = obj;
-
-        holder.tvProjectName.setText(obj.getName());
+        // Dispose of existing subscriptions (in case view is being recycled)
+        holder.projectItem.unsubscribe();
+        holder.projectItem.setProject(obj);
     }
 
     @Override
@@ -69,13 +72,11 @@ public class ProjectListRealmRecyclerViewAdapter extends RealmRecyclerViewAdapte
 
     class ProjectViewHolder extends RecyclerView.ViewHolder {
         public Project data;
-        @BindView(R.id.tvProjectName)
-        TextView tvProjectName;
-
+        ProjectItemLayout projectItem;
 
         ProjectViewHolder(View view) {
             super(view);
-            ButterKnife.bind(this, view);
+            projectItem = (ProjectItemLayout)view;
         }
     }
 }
