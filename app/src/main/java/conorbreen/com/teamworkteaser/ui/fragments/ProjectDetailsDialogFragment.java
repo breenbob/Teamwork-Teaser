@@ -356,11 +356,12 @@ public class ProjectDetailsDialogFragment extends DialogFragment implements Date
                     } else {
                         // For project updates it is ok to update the local Realm object
                         realmService.updatedManagedObject(realm -> realm.copyToRealmOrUpdate(project),
-                                onSuccess -> {
+                                () -> {
                                     Toast.makeText(getContext(), R.string.snackbar_update_project_succeeded, Toast.LENGTH_LONG).show();
                                     dismiss();
                                 },
-                                () -> {
+                                throwable -> {
+                                    Timber.e(throwable, "Error updating local project in realm");
                                     String errorMsg = String.format(getResources().getString(R.string.snackbar_update_project_failed), "Error saving to local database.");
                                     Toast.makeText(getContext(), errorMsg, Toast.LENGTH_LONG).show();
                                 });
@@ -375,11 +376,5 @@ public class ProjectDetailsDialogFragment extends DialogFragment implements Date
     public void onDestroy() {
         super.onDestroy();
         disposables.dispose();
-
-        try {
-            realmService.close();
-        } catch (IOException ex) {
-            Timber.e(ex);
-        }
     }
 }

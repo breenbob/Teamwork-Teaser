@@ -16,7 +16,8 @@ import conorbreen.com.teamworkteaser.models.Project;
  */
 
 public class ProjectSerializer implements JsonSerializer<Project> {
-    private SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd", Locale.UK);
+    private SimpleDateFormat shortDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.UK);
+    private SimpleDateFormat isoDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.UK);
 
     @Override
     public JsonElement serialize(final Project value, final Type type, final JsonSerializationContext context) {
@@ -55,22 +56,22 @@ public class ProjectSerializer implements JsonSerializer<Project> {
 
         // Reason for custom json serializer - to handle the 2 (optional) date formats used:
         if (value.getStartDate() != null) {
-            jsonObj.addProperty("startDate", df.format(value.getStartDate()));
+            jsonObj.addProperty("startDate", shortDateFormat.format(value.getStartDate()));
         } else {
             jsonObj.addProperty("startDate", "");
         }
         if (value.getEndDate() != null) {
-            jsonObj.addProperty("endDate", df.format(value.getEndDate()));
+            jsonObj.addProperty("endDate", shortDateFormat.format(value.getEndDate()));
         } else {
             jsonObj.addProperty("endDate", "");
         }
         if (value.getCreatedOn() != null) {
-            jsonObj.addProperty("created-on", df.format(value.getCreatedOn()));
+            jsonObj.addProperty("created-on", isoDateFormat.format(value.getCreatedOn()));
         } else {
             jsonObj.addProperty("created-on", "");
         }
         if (value.getLastChangedOn() != null) {
-            jsonObj.addProperty("last-changed-on", df.format(value.getLastChangedOn()));
+            jsonObj.addProperty("last-changed-on", isoDateFormat.format(value.getLastChangedOn()));
         } else {
             jsonObj.addProperty("last-changed-on", "");
         }

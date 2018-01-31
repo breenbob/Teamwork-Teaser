@@ -232,13 +232,7 @@ public class ProjectListFragment extends Fragment {
         super.onDestroy();
 
         disposables.dispose();
-
-        try {
-            realmService.close();
-            this.projectListResults.removeChangeListener(changeListener);
-        } catch (IOException ex) {
-            Timber.e(ex);
-        }
+        this.projectListResults.removeChangeListener(changeListener);
     }
 
     private class ProjectTouchHelperCallback extends ItemTouchHelper.SimpleCallback {

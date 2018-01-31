@@ -141,6 +141,9 @@ public class ProjectItemLayout extends LinearLayout {
         }
 
         if (project.getTags() != null && project.getTags().size() > 0) {
+            // Remove existing views
+            flexboxTags.removeAllViews();
+
             ChipCloudConfig config = new ChipCloudConfig()
                     .selectMode(ChipCloud.SelectMode.none)
                     .uncheckedChipColor(Color.parseColor("#efefef"))
@@ -207,14 +210,18 @@ public class ProjectItemLayout extends LinearLayout {
 
     private void setRealmObjectStarred(Project project, boolean starred) {
         TeamworkRealmService.getInstance().updatedManagedObject(transaction -> project.setStarred(starred),
-                onSuccess ->{
+                () ->{
                     if (starred) {
                         starRemoteProject(project);
                     } else {
                         unstarRemoteProject(project);
                     }
                 },
-                () -> Snackbar.make(cbStarred, starred ? R.string.snackbar_star_error : R.string.snackbar_unstar_error, Snackbar.LENGTH_SHORT).show());
+                throwable ->
+                {
+                    Timber.e(throwable, "Error %s local project in realm", starred ? "starring" : "unstarring");
+                    Snackbar.make(cbStarred, starred ? R.string.snackbar_star_error : R.string.snackbar_unstar_error, Snackbar.LENGTH_SHORT).show();
+                });
     }
 
     private void starRemoteProject(Project project) {

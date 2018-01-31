@@ -152,7 +152,7 @@ public class TeamworkRealmService implements Closeable {
                 .asFlowable();
     }
 
-    public void updatedManagedObject(Realm.Transaction transaction, Realm.Transaction.OnError onError, Realm.Transaction.OnSuccess onSuccess) {
+    public void updatedManagedObject(Realm.Transaction transaction, Realm.Transaction.OnSuccess onSuccess, Realm.Transaction.OnError onError) {
         realm.executeTransactionAsync(transaction, onSuccess, onError);
     }
 
@@ -181,6 +181,8 @@ public class TeamworkRealmService implements Closeable {
     @Override
     @UiThread
     public void close() throws IOException {
-        realm.close();
+        if (!realm.isClosed()) {
+            realm.close();
+        }
     }
 }
